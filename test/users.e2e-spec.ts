@@ -179,6 +179,43 @@ describe('Users (e2e)', () => {
         error: 'Bad Request',
       });
     });
+
+    it('/ (POST) try create user without a password', async () => {
+      const adminWithoutPassword = { ...admin };
+      delete adminWithoutPassword.password;
+
+      const response = await request(app.getHttpServer())
+        .post('/users')
+        .send(adminWithoutPassword);
+
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({
+        statusCode: 400,
+        message: [
+          'Password must be at least 6 characters long',
+          'Provide an password',
+        ],
+        error: 'Bad Request',
+      });
+    });
+
+    it('/ (POST) try create user with a password less more than 6 characters', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/users')
+        .send({
+          ...admin,
+          ...{
+            password: '123',
+          },
+        });
+
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({
+        statusCode: 400,
+        message: ['Password must be at least 6 characters long'],
+        error: 'Bad Request',
+      });
+    });
   });
 
   afterAll(async () => {
