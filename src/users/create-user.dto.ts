@@ -31,5 +31,11 @@ export class CreateUserDto {
   })
   password: string;
 
+  @IsNotEmpty({
+    message: 'Provide an confirmation password',
+  })
+  @MinLength(6, {
+    message: 'Confirmation password must be at least 6 characters long',
+  })
   passwordConfirmation: string;
 }

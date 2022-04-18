@@ -216,6 +216,43 @@ describe('Users (e2e)', () => {
         error: 'Bad Request',
       });
     });
+
+    it('/ (POST) try create user without a password confirmation', async () => {
+      const adminWithoutConfirmationPassword = { ...admin };
+      delete adminWithoutConfirmationPassword.passwordConfirmation;
+
+      const response = await request(app.getHttpServer())
+        .post('/users')
+        .send(adminWithoutConfirmationPassword);
+
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({
+        statusCode: 400,
+        message: [
+          'Confirmation password must be at least 6 characters long',
+          'Provide an confirmation password',
+        ],
+        error: 'Bad Request',
+      });
+    });
+
+    it('/ (POST) try create user with an confirmation password less more than 6 characters', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/users')
+        .send({
+          ...admin,
+          ...{
+            passwordConfirmation: '123',
+          },
+        });
+
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({
+        statusCode: 400,
+        message: ['Confirmation password must be at least 6 characters long'],
+        error: 'Bad Request',
+      });
+    });
   });
 
   afterAll(async () => {
