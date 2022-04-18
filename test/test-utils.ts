@@ -1,6 +1,8 @@
 import { EntityTarget, ObjectLiteral, getConnection } from 'typeorm';
 
-export async function clearRegisterOnTable<T>(
+import { User } from '../src/users/user.entity';
+
+export async function deleteRegisterOnTable<T>(
   entity: EntityTarget<T>,
   where: string,
   parameters?: ObjectLiteral,
@@ -11,4 +13,8 @@ export async function clearRegisterOnTable<T>(
     .from(entity)
     .where(where, parameters)
     .execute();
+}
+
+export async function deleteUserOnDataBaseForEmail(email: string) {
+  deleteRegisterOnTable(User, 'email = :email', { email });
 }
